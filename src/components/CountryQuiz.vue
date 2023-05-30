@@ -1,0 +1,157 @@
+<script>
+import axios from 'axios';
+import { Icon } from '@iconify/vue';
+import TheScore from '../components/TheScore.vue';
+export default {
+  components: {Icon, TheScore},
+  data() {
+    return {
+      countries: [],
+      getRandomNumbers(array) {
+        for (let i = array.length -1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array
+      },
+      optLetter: ['A', 'B', 'C', 'D'],
+      correctOptions: [],
+      correct: false,
+      selectedCountry: null,
+      validationHelper: null,
+      totalScore: 0,
+      counter: 0,
+      answerStyles: '',
+    }
+  },
+
+  
+  created() {
+    if(this.counter <= 4) {
+      axios.get('https://restcountries.com/v3.1/all')
+    .then(response => {
+      const shuffledCountries = this.getRandomNumbers(response.data)
+      const incorroctOptions = shuffledCountries.slice(1, 4)
+      this.correctOptions = shuffledCountries.slice(0, 1)
+      this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
+
+    })
+    .catch(error => console.log(error))
+    }
+  },
+  methods: {
+    next() {
+        axios.get('https://restcountries.com/v3.1/all')
+        .then(response => {
+        const shuffledCountries = this.getRandomNumbers(response.data)
+        const incorroctOptions = shuffledCountries.slice(1, 4)
+        this.correctOptions = shuffledCountries.slice(0, 1)
+        this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
+        this.correct = false
+        this.selectedCountry = null
+        this.validationHelper = false
+        this.counter++
+        console.log(this.counter)
+
+      })
+        .catch(error => console.log(error))
+    },
+
+    tryAgain() {
+        
+        axios.get('https://restcountries.com/v3.1/all')
+        .then(response => {
+        const shuffledCountries = this.getRandomNumbers(response.data)
+        const incorroctOptions = shuffledCountries.slice(1, 4)
+        this.correctOptions = shuffledCountries.slice(0, 1)
+        this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
+        this.counter = 0
+        this.totalScore = 0
+
+      })
+        .catch(error => console.log(error))
+    },
+
+    getAnswer(event) {
+      if(event === this.correctOptions[0]) {
+        this.selectedCountry = event
+        this.correct = true
+        this.validationHelper = true
+        this.totalScore += 1
+        console.log(this.totalScore)
+      } else {
+        this.selectedCountry = event
+        this.correct = false
+        this.validationHelper = true
+        this.totalScore
+        console.log(this.totalScore)
+      }
+    }
+  },
+
+  computed: {
+    checkAnswerAndApplyStyles(country) {
+      if(this.correct && country === this.correctOptions[0]  && country === this.selectedCountry) {
+        return 'bg-green-500 ring-0 ring-transparent hover:bg-green-500';
+      } else if (country === this.correctOptions[0] && this.validationHelper) {
+        return 'bg-green-500 ring-0 ring-transparent hover:bg-green-500'
+      } else {
+        return 'bg-red-500 ring-0 ring-transparent hover:bg-red-500';
+      }
+    }
+  }
+
+}
+</script>
+
+<template>
+  <div class="h-screen flex w-[100%]">
+    <div v-show="counter < 5" class="m-auto space-y-2">
+      <h1 class="text-3xl font-mono uppercase text-white">Country quiz</h1>
+      <div class="bg-white rounded-2xl drop-shadow-sm w-96 mx-auto h-auto pb-8 px-0">
+        <img src="../assets/undraw_adventure_4hum 1.svg" alt="" class="absolute right-0 -top-20">
+        <div class="px-6 pt-14">
+          <p v-for="correctAnswer in correctOptions" :key="correctAnswer" class="text-lg font-bold text-sky-950 font-mono"> 
+            <span v-for="capital in correctAnswer.capital" :key="capital">{{ capital }}</span> 
+            is the capital of?
+          </p>
+          <div v-for="(country, index) in countries" :key="country.id" class="flex flex-col w-full space-y-3 mt-8">
+            <button @click="getAnswer(country)" 
+            :disabled="selectedCountry"
+             class="font-mono ring-2 ring-[#0288D1] ring-inset py-2 pl-3 text-left rounded-lg text-[#0288D1] hover:bg-amber-500 hover:ring-0 hover:text-white transition-all duration-500 ease-in-out flex justify-between pr-3"
+            :class="{'bg-green-500 ring-0 ring-transparent hover:bg-green-500': correct && country === correctOptions[0]  && country === selectedCountry, 
+            'bg-green-500 ring-0 ring-transparent hover:bg-green-500': country === correctOptions[0] && validationHelper,
+            'bg-red-500 ring-0 ring-transparent hover:bg-red-500':!correct && country !== correctOptions[0] && country === selectedCountry
+            }"
+            >
+              <div>
+                <span class="mr-4"
+                :class="{'text-gray-50': country === correctOptions[0] && validationHelper,
+                'text-white':!correct && country !== correctOptions[0] && country === selectedCountry}"
+                >{{ optLetter[index] }}</span>
+                <span :class="{'text-gray-50':correct && country === correctOptions[0] && country === selectedCountry,
+                'text-gray-50': country === correctOptions[0] && validationHelper,
+                'text-white':!correct && country !== correctOptions[0] && country === selectedCountry}">{{country.name.common}}
+                </span>
+              </div>
+              <Icon icon="emojione-monotone:white-heavy-check-mark" 
+              color="white" class="text-white self-center" 
+              v-show="!correct && country === correctOptions[0] && validationHelper"/>
+              <Icon icon="emojione-monotone:white-heavy-check-mark" 
+              color="white" class="text-white self-center" 
+              v-show="correct && country === correctOptions[0] && validationHelper"/>
+
+              <Icon icon="fa6-solid:xmark" color="white" class="text-white self-center" v-show="!correct && country !== correctOptions[0] && country === selectedCountry"/>
+              </button>          
+          </div>
+        </div>
+        <div class="flex justify-end px-6 pt-5">
+          <button v-show="selectedCountry" @click="next" class="text-white bg-amber-500 rounded-lg py-2 px-8 float-right hover:bg-amber-700 transition-all duration-300 ease-in-out">
+              NEXT
+          </button>
+        </div>
+      </div>
+    </div>
+    <TheScore @retry="tryAgain" :score="totalScore" v-show="counter >= 5"/>
+  </div>
+</template>

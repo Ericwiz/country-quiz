@@ -1,7 +1,7 @@
 <script>
 import axios from 'axios';
 import { Icon } from '@iconify/vue';
-import TheScore from '../components/TheScore.vue';
+import TheScore from './TheScore.vue';
 export default {
   components: {Icon, TheScore},
   data() {
@@ -22,25 +22,27 @@ export default {
       totalScore: 0,
       counter: 0,
       answerStyles: '',
+      start: false,
+      notStarted: true
     }
   },
 
   
-  created() {
-    if(this.counter <= 4) {
-      axios.get('https://restcountries.com/v3.1/all')
-    .then(response => {
-      const shuffledCountries = this.getRandomNumbers(response.data)
-      const incorroctOptions = shuffledCountries.slice(1, 4)
-      this.correctOptions = shuffledCountries.slice(0, 1)
-      this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
+  // created() {
+  //   if(this.counter <= 4) {
+  //     axios.get('https://restcountries.com/v3.1/all')
+  //   .then(response => {
+  //     const shuffledCountries = this.getRandomNumbers(response.data)
+  //     const incorroctOptions = shuffledCountries.slice(1, 4)
+  //     this.correctOptions = shuffledCountries.slice(0, 1)
+  //     this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
 
-    })
-    .catch(error => console.log(error))
-    }
-  },
+  //   })
+  //   .catch(error => console.log(error))
+  //   }
+  // },
   methods: {
-    next() {
+    getQuestion() {
         axios.get('https://restcountries.com/v3.1/all')
         .then(response => {
         const shuffledCountries = this.getRandomNumbers(response.data)
@@ -51,7 +53,8 @@ export default {
         this.selectedCountry = null
         this.validationHelper = false
         this.counter++
-        console.log(this.counter)
+        this.start = true
+        this.notStarted = false
 
       })
         .catch(error => console.log(error))
@@ -71,7 +74,7 @@ export default {
       })
         .catch(error => console.log(error))
     },
-
+    // Check if answer is right or wrong when an option is selected
     getAnswer(event) {
       if(event === this.correctOptions[0]) {
         this.selectedCountry = event
@@ -105,7 +108,15 @@ export default {
 </script>
 
 <template>
-  <div class="h-screen flex w-[100%]">
+  <div v-show="notStarted" class="flex flex-col pt-10 h-screen space-y-6 px-8">
+    <h1 class="text-3xl text-white font-bold mx-auto h-auto">Welcome to country capital quiz</h1>
+        <p class="text-white text-lg mx-auto">In this section of the quiz, You'll be presented with capital of various nations, and your task is to guess which country each capital belongs to. Put your knowledge to  test and see how many questions you can correctly answer. <span class="italic">let's goooooo!!!!!! </span> 
+        </p>
+        <div class="mx-auto">
+            <button @click="getQuestion" class="text-white ring-2 ring-inset ring-white hover:ring-transparent hover:bg-[#000534] py-3 px-7 rounded-lg mr-6" to="/flag">start quiz</button>
+        </div>
+  </div>
+  <div v-show="start" class="h-screen flex w-[100%]">
     <div v-show="counter < 5" class="m-auto space-y-2">
       <h1 class="text-3xl font-mono uppercase text-white">Country quiz</h1>
       <div class="bg-white rounded-2xl drop-shadow-sm w-96 mx-auto h-auto pb-8 px-0">
@@ -125,7 +136,8 @@ export default {
             }"
             >
               <div>
-                <span class="mr-4"
+                <span 
+                class="mr-4"
                 :class="{'text-gray-50': country === correctOptions[0] && validationHelper,
                 'text-white':!correct && country !== correctOptions[0] && country === selectedCountry}"
                 >{{ optLetter[index] }}</span>
@@ -146,7 +158,7 @@ export default {
           </div>
         </div>
         <div class="flex justify-end px-6 pt-5">
-          <button v-show="selectedCountry" @click="next" class="text-white bg-amber-500 rounded-lg py-2 px-8 float-right hover:bg-amber-700 transition-all duration-300 ease-in-out">
+          <button v-show="selectedCountry" @click="getQuestion" class="text-white bg-amber-500 rounded-lg py-2 px-8 float-right hover:bg-amber-700 transition-all duration-300 ease-in-out">
               NEXT
           </button>
         </div>

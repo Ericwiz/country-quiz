@@ -8,7 +8,7 @@ export default {
 <template>
     <div class="flex flex-col m-auto rounded-lg bg-white h-auto w-96" >
         <div class="m-auto space-y-10 py-4 place-self-center">
-            <img src="../assets/undraw_winners_ao2o 2.svg">
+            <img src="../assets/undraw_winners_ao2o2.svg">
             <h2 class="text-center font-bold text-4xl text-[#010426]">Results</h2>
             <p class="text-center text-lg text-[#010850]">you got <span class="text-3xl text-green-500">{{ score }}</span> correct answers</p>
             <p class="text-black text-center flex space-x-6"> 

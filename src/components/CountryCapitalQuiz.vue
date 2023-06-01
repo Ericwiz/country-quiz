@@ -26,21 +26,6 @@ export default {
       notStarted: true
     }
   },
-
-  
-  // created() {
-  //   if(this.counter <= 4) {
-  //     axios.get('https://restcountries.com/v3.1/all')
-  //   .then(response => {
-  //     const shuffledCountries = this.getRandomNumbers(response.data)
-  //     const incorroctOptions = shuffledCountries.slice(1, 4)
-  //     this.correctOptions = shuffledCountries.slice(0, 1)
-  //     this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
-
-  //   })
-  //   .catch(error => console.log(error))
-  //   }
-  // },
   methods: {
     getQuestion() {
         axios.get('https://restcountries.com/v3.1/all')
@@ -120,7 +105,9 @@ export default {
     <div v-show="counter < 5" class="m-auto space-y-2">
       <h1 class="text-3xl font-mono uppercase text-white">Country quiz</h1>
       <div class="bg-white rounded-2xl drop-shadow-sm w-96 mx-auto h-auto pb-8 px-0">
-        <img src="../assets/undraw_adventure_4hum 1.svg" alt="" class="absolute right-0 -top-20">
+        <img src="../assets/undraw_adventure_4hum1.svg" alt="" class="absolute right-0 -top-20">
+
+        
         <div class="px-6 pt-14">
           <p v-for="correctAnswer in correctOptions" :key="correctAnswer" class="text-lg font-bold text-sky-950 font-mono"> 
             <span v-for="capital in correctAnswer.capital" :key="capital">{{ capital }}</span> 

@@ -7,6 +7,7 @@ export default {
   data() {
     return {
       countries: [],
+    //   Generate random numbers and store it in an array in a rearraged order
       getRandomNumbers(array) {
         for (let i = array.length -1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -16,37 +17,32 @@ export default {
       },
       optLetter: ['A', 'B', 'C', 'D'],
       correctOptions: [],
+      // Determine whether answer is correct or not
       correct: false,
+
+      // Determine the selected country from the options
       selectedCountry: null,
+
+      // Helps to apply the correct option option styles to show the user the correct answer when they choose the wrong answer
       validationHelper: null,
       totalScore: 0,
+      // Determine how many questions to be asked
       counter: 0,
-      answerStyles: '',
+      // starts the quiz when it becomes true
       start: false,
+      // shows the quiz description when start is false
       notStarted: true
     }
   },
 
   
-  // created() {
-  //   if(this.counter <= 4) {
-  //     axios.get('https://restcountries.com/v3.1/all')
-  //   .then(response => {
-  //     const shuffledCountries = this.getRandomNumbers(response.data)
-  //     const incorroctOptions = shuffledCountries.slice(1, 4)
-  //     this.correctOptions = shuffledCountries.slice(0, 1)
-  //     this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
-
-  //   })
-  //   .catch(error => console.log(error))
-  //   }
-  // },
   methods: {
+    // Fetch questions from the API
     getQuestion() {
         axios.get('https://restcountries.com/v3.1/all')
         .then(response => {
         const shuffledCountries = this.getRandomNumbers(response.data)
-        const incorroctOptions = shuffledCountries.slice(1, 4)
+        const incorroctOptions = shuffledCountries.slice(1, 5)
         this.correctOptions = shuffledCountries.slice(0, 1)
         this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
         this.correct = false
@@ -55,13 +51,14 @@ export default {
         this.counter++
         this.start = true
         this.notStarted = false
+        console.log(this.countries)
 
       })
         .catch(error => console.log(error))
     },
 
     tryAgain() {
-        
+        // Restart quiz by refetching the questions and also resetting some variables to default
         axios.get('https://restcountries.com/v3.1/all')
         .then(response => {
         const shuffledCountries = this.getRandomNumbers(response.data)
@@ -81,39 +78,25 @@ export default {
         this.correct = true
         this.validationHelper = true
         this.totalScore += 1
-        console.log(this.totalScore)
       } else {
         this.selectedCountry = event
         this.correct = false
         this.validationHelper = true
         this.totalScore
-        console.log(this.totalScore)
       }
     }
   },
-
-  computed: {
-    checkAnswerAndApplyStyles(country) {
-      if(this.correct && country === this.correctOptions[0]  && country === this.selectedCountry) {
-        return 'bg-green-500 ring-0 ring-transparent hover:bg-green-500';
-      } else if (country === this.correctOptions[0] && this.validationHelper) {
-        return 'bg-green-500 ring-0 ring-transparent hover:bg-green-500'
-      } else {
-        return 'bg-red-500 ring-0 ring-transparent hover:bg-red-500';
-      }
-    }
-  }
 
 }
 </script>
 
 <template>
   <div v-show="notStarted" class="flex flex-col pt-10 h-screen space-y-6 px-8">
-    <h1 class="text-3xl text-white font-bold mx-auto h-auto">Welcome to country capital quiz</h1>
-        <p class="text-white text-lg mx-auto">In this section of the quiz, You'll be presented with capital of various nations, and your task is to guess which country each capital belongs to. Put your knowledge to  test and see how many questions you can correctly answer. <span class="italic">let's goooooo!!!!!! </span> 
+    <h1 class="text-3xl text-white font-bold mx-auto h-auto">Welcome to country flag quiz</h1>
+        <p class="text-white text-lg mx-auto">Test your knowledge and challenge yourself with this exciting quizes.You'll be presented with flags from various nations, and your task is to guess which country each flag belongs to. Put your visual recognition skills to the test and see how many flags you can correctly identify!. <span class="italic">let's goooooo!!!!!! </span> 
         </p>
         <div class="mx-auto">
-            <router-link @click="getQuestion" class="text-white ring-2 ring-inset ring-white hover:ring-transparent hover:bg-[#000534] py-3 px-7 rounded-lg mr-6" to="/capital">start quiz</router-link>
+            <router-link @click="getQuestion" class="text-white ring-2 ring-inset ring-white hover:ring-transparent hover:bg-[#000534] py-3 px-7 rounded-lg mr-6" to="/flag">start quiz</router-link>
         </div>
   </div>
   <div v-show="start" class="h-screen flex w-[100%]">
@@ -122,10 +105,13 @@ export default {
       <div class="bg-white rounded-2xl drop-shadow-sm w-96 mx-auto h-auto pb-8 px-0">
         <img src="../assets/undraw_adventure_4hum 1.svg" alt="" class="absolute right-0 -top-20">
         <div class="px-6 pt-14">
-          <p v-for="correctAnswer in correctOptions" :key="correctAnswer" class="text-lg font-bold text-sky-950 font-mono"> 
-            <span v-for="capital in correctAnswer.capital" :key="capital">{{ capital }}</span> 
-            is the capital of?
-          </p>
+            <!-- Quiz question from the correctOption array. -->
+          <div v-for="correctAnswer in correctOptions" :key="correctAnswer" class="text-lg font-bold text-sky-950 font-mono"> 
+            <p class="text-4xl">{{ correctAnswer.flag }}</p>
+            
+            <span>Which country does this flag belong to?</span> 
+            {{ console.log(correctAnswer.flags.png) }}
+          </div>
           <div v-for="(country, index) in countries" :key="country.id" class="flex flex-col w-full space-y-3 mt-8">
             <button @click="getAnswer(country)" 
             :disabled="selectedCountry"

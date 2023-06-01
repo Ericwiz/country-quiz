@@ -13,7 +13,13 @@ const router = createRouter({
       path: '/capital',
       name: 'countryCapital',
       component: () => import('../views/CountryCapitalQuizView.vue')
-    }
+    },
+
+    {
+      path: '/flag',
+      name: 'CountryFlag',
+      component: () => import('../views/CountryFlagView.vue')
+    },
   ]
 })
 

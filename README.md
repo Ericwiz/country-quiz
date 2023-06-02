@@ -20,7 +20,7 @@ A Vue.js application that allows users to test their knowledge of countries by a
 
 ## Screenshots
 ![Country-Quiz home page](./src/assets/country-quiz2.jpeg)
-![Quiz by capital](./src/assets/country-quiz2.jpeg)
+![Quiz by capital](./src/assets/country-quiz1.jpeg)
 
 ## Features
 - Two quiz types: Quiz by Country Capital and Quiz by Flag.

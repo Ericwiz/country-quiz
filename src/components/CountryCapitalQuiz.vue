@@ -1,93 +1,10 @@
 <script>
-import axios from 'axios';
 import { Icon } from '@iconify/vue';
 import TheScore from './TheScore.vue';
+import countryQuiz from '../mixins/countryQuiz';
 export default {
   components: {Icon, TheScore},
-  data() {
-    return {
-      countries: [],
-      getRandomNumbers(array) {
-        for (let i = array.length -1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-          }
-          return array
-      },
-      optLetter: ['A', 'B', 'C', 'D'],
-      correctOptions: [],
-      correct: false,
-      selectedCountry: null,
-      validationHelper: null,
-      totalScore: 0,
-      counter: 0,
-      answerStyles: '',
-      start: false,
-      notStarted: true
-    }
-  },
-  methods: {
-    getQuestion() {
-        axios.get('https://restcountries.com/v3.1/all')
-        .then(response => {
-        const shuffledCountries = this.getRandomNumbers(response.data)
-        const incorroctOptions = shuffledCountries.slice(1, 4)
-        this.correctOptions = shuffledCountries.slice(0, 1)
-        this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
-        this.correct = false
-        this.selectedCountry = null
-        this.validationHelper = false
-        this.counter++
-        this.start = true
-        this.notStarted = false
-
-      })
-        .catch(error => console.log(error))
-    },
-
-    tryAgain() {
-        
-        axios.get('https://restcountries.com/v3.1/all')
-        .then(response => {
-        const shuffledCountries = this.getRandomNumbers(response.data)
-        const incorroctOptions = shuffledCountries.slice(1, 4)
-        this.correctOptions = shuffledCountries.slice(0, 1)
-        this.countries = this.getRandomNumbers(incorroctOptions.concat(this.correctOptions))
-        this.counter = 0
-        this.totalScore = 0
-
-      })
-        .catch(error => console.log(error))
-    },
-    // Check if answer is right or wrong when an option is selected
-    getAnswer(event) {
-      if(event === this.correctOptions[0]) {
-        this.selectedCountry = event
-        this.correct = true
-        this.validationHelper = true
-        this.totalScore += 1
-        console.log(this.totalScore)
-      } else {
-        this.selectedCountry = event
-        this.correct = false
-        this.validationHelper = true
-        this.totalScore
-        console.log(this.totalScore)
-      }
-    }
-  },
-
-  computed: {
-    checkAnswerAndApplyStyles(country) {
-      if(this.correct && country === this.correctOptions[0]  && country === this.selectedCountry) {
-        return 'bg-green-500 ring-0 ring-transparent hover:bg-green-500';
-      } else if (country === this.correctOptions[0] && this.validationHelper) {
-        return 'bg-green-500 ring-0 ring-transparent hover:bg-green-500'
-      } else {
-        return 'bg-red-500 ring-0 ring-transparent hover:bg-red-500';
-      }
-    }
-  }
+  mixins: [countryQuiz]
 
 }
 </script>

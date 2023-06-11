@@ -2,6 +2,9 @@
 
 A Vue.js application that allows users to test their knowledge of countries by answering quizzes based on country capitals or flags. The application utilizes the REST Countries API to retrieve country information.
 
+## Live Link
+[Country Quiz](https://country-quiz-ojf5.onrender.com/)
+
 ## Technologies Used
 - Vue.js
 - REST Countries API
